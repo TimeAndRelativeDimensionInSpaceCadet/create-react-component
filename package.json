@@ -1,0 +1,27 @@
+{
+  "name": "@jabbrowocky/create-react-component",
+  "version": "1.0.0",
+  "description": "A cli to scaffold react components",
+  "main": "./src/cli.js",
+  "bin": {
+    "@jabbrowocky/create-react-component": "./bin/create-react-component",
+    "create-react-component": "./bin/create-react-component"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cli",
+    "create-react-component"
+  ],
+  "author": "jabbrowocky",
+  "license": "MIT",
+  "dependencies": {
+    "arg": "^5.0.2",
+    "esm": "^3.2.25",
+    "inquirer": "^8.0.0"
+  }
+}
