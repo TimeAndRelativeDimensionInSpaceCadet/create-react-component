@@ -21,7 +21,13 @@
   "license": "MIT",
   "dependencies": {
     "arg": "^5.0.2",
-    "esm": "^3.2.25",
-    "inquirer": "^8.0.0"
-  }
+    "esm-wallaby": "^3.2.26",
+    "inquirer": "^8.0.0",
+    "react": "^18.2.0"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "templates/"
+  ]
 }

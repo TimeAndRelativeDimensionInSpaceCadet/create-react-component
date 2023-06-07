@@ -1,5 +1,8 @@
 import arg from "arg";
 import inquirer from "inquirer";
+import path from "path";
+import fs from "fs";
+import { promisify } from "util";
 
 const parseArgumentsIntoOptions = (rawArgs) => {
   const componentTypeFlag = "--component";
@@ -20,9 +23,8 @@ const parseArgumentsIntoOptions = (rawArgs) => {
   );
 
   return {
-    componentType:
-      args[componentTypeFlag] && args[componentTypeFlag].toLowerCase(),
-    styleType: args[styleFileTypeFlag] && args[styleFileTypeFlag].toLowerCase(),
+    componentType: args[componentTypeFlag]?.toLowerCase(),
+    styleType: args[styleFileTypeFlag]?.toLowerCase(),
     componentName: args._[0],
     directory: args._[1],
   };
@@ -31,18 +33,22 @@ const parseArgumentsIntoOptions = (rawArgs) => {
 const promptForMissingOptions = async (options) => {
   const validComponentTypes = ["functional", "class"];
   const validStyleTypes = ["css", "sass"];
-  //const defaultComponentDir = "./src/components";
+  const defaultComponentDir = "./src/components";
   const potentialQuestions = [];
 
-  if (
-    !options.componentName ||
-    (options.componentName && options.componentName.length < 1)
-  ) {
+  if (!options.componentName) {
     potentialQuestions.push({
       type: "string",
       name: "componentName",
       message: "Please enter a component name?",
-      default: "",
+      validate: (e) => {
+        const errorMessage = "Please enter a name.";
+        const isValidName = /^[^\W]+$/i.test(e) && e.length > 0;
+
+        return new Promise((resolve) =>
+          isValidName ? resolve(isValidName) : resolve(errorMessage)
+        );
+      },
     });
   }
 
@@ -55,7 +61,6 @@ const promptForMissingOptions = async (options) => {
       name: "componentType",
       message: "Which type of component would you like to create?",
       choices: validComponentTypes,
-      default: validComponentTypes[0],
     });
   }
 
@@ -71,14 +76,15 @@ const promptForMissingOptions = async (options) => {
     });
   }
 
-  /* if (!options.directory || !isValidDirectory(options.directory)) {
+  if (!options.directory) {
     potentialQuestions.push({
       type: "string",
       name: "directory",
-      message: "Which directory should the component be generatede in?",
+      message: "Which directory should the component be generated in?",
       default: defaultComponentDir,
+      validate: validateDirectory,
     });
-  } */
+  }
 
   return await inquirer.prompt(potentialQuestions).then((answers) => ({
     ...options,
@@ -87,12 +93,15 @@ const promptForMissingOptions = async (options) => {
 };
 
 const isValidOption = (inputValue, optionsArr) => {
-  return inputValue && optionsArr.includes(inputValue.toLowerCase());
+  return optionsArr?.includes?.(inputValue?.toLowerCase());
 };
 
-/* const isValidDirectory = (directory) => {
-  
-}; */
+const validateDirectory = async (directoryInput) => {
+  const access = promisify(fs.access);
+  const fullPathName = new URL(import.meta.url).pathname;
+  //const result = await access();
+  console.log(fullPathName);
+};
 
 const generateComponent = async () => {};
 
