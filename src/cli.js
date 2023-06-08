@@ -2,7 +2,6 @@ import arg from "arg";
 import inquirer from "inquirer";
 import path from "path";
 import fs from "fs";
-import { promisify } from "util";
 
 const parseArgumentsIntoOptions = (rawArgs) => {
   const componentTypeFlag = "--component";
@@ -38,9 +37,9 @@ const promptForMissingOptions = async (options) => {
 
   if (!options.componentName) {
     potentialQuestions.push({
-      type: "string",
+      type: "input",
       name: "componentName",
-      message: "Please enter a component name?",
+      message: "What should the component name be?",
       validate: (e) => {
         const errorMessage = "Please enter a name.";
         const isValidName = /^[^\W]+$/i.test(e) && e.length > 0;
@@ -59,7 +58,7 @@ const promptForMissingOptions = async (options) => {
     potentialQuestions.push({
       type: "list",
       name: "componentType",
-      message: "Which type of component would you like to create?",
+      message: "Which type of react component would you like to create?",
       choices: validComponentTypes,
     });
   }
@@ -78,11 +77,11 @@ const promptForMissingOptions = async (options) => {
 
   if (!options.directory) {
     potentialQuestions.push({
-      type: "string",
+      type: "input",
       name: "directory",
       message: "Which directory should the component be generated in?",
+      filter: (e) => path.join(path.resolve(), e),
       default: defaultComponentDir,
-      validate: validateDirectory,
     });
   }
 
@@ -96,18 +95,54 @@ const isValidOption = (inputValue, optionsArr) => {
   return optionsArr?.includes?.(inputValue?.toLowerCase());
 };
 
-const validateDirectory = async (directoryInput) => {
-  const access = promisify(fs.access);
-  const fullPathName = new URL(import.meta.url).pathname;
-  //const result = await access();
-  console.log(fullPathName);
+const generateComponent = async ({syleType}) => {
+  const fileToCopy =
+    options.componentType === "functional"
+      ? "functionComponentTemplate.jsx"
+      : "classComponentTemplate.jsx";
+  const template = path.join(__dirname, "../templates", fileToCopy);
+  const writeTo = options
+  fs.copyFile(template, writeTo, ({ code }) => process.exit(code));
 };
 
-const generateComponent = async () => {};
+const validateDirectory = async (answers) => {
+  const dirExists = await fs.promises
+    .access(answers.directory)
+    .then(() => true)
+    .catch(({ code }) => {
+      if (code === "ENOENT") {
+        return false;
+      }
+      process.exit(code);
+    });
+
+  return { ...answers, directoryExists: dirExists };
+};
+
+const promptCreateDirectory = async ({ directoryExists, ...rest }) => {
+  if (!directoryExists) {
+    await inquirer
+      .prompt({
+        type: "confirm",
+        message: "Directory does not exist, would you like to create it?",
+        name: "createDir",
+      })
+      .then(async ({ createDir }) => {
+        if (createDir) {
+          const { directory } = rest;
+          return await fs.promises
+            .mkdir(directory, { recursive: true })
+            .catch(({ code }) => process.exit(code));
+        }
+      });
+  }
+  return { ...rest };
+};
 
 export const cli = async (args) => {
   const options = parseArgumentsIntoOptions(args);
-  const optionsAfterPrompt = await promptForMissingOptions(options);
-
-  console.log(optionsAfterPrompt);
+  await promptForMissingOptions(options)
+    .then(validateDirectory)
+    .then(promptCreateDirectory)
+    .then(generateComponent);
 };
