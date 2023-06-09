@@ -1,7 +1,8 @@
 import arg from 'arg';
 import inquirer from 'inquirer';
-import path from 'path';
-import fs from 'fs';
+import path from 'node:path';
+import fs from 'node:fs';
+import * as url from 'url';
 
 const parseArgumentsIntoOptions = rawArgs => {
   const componentTypeFlag = '--component';
@@ -101,7 +102,11 @@ const copyTemplateFile = async (inputFile, outputFile) => {
 };
 
 const getTemplateFilepath = name => {
-  return path.join(__dirname, '../templates', name);
+  return path.join(
+    url.fileURLToPath(new URL('.', import.meta.url)),
+    '../templates',
+    name
+  );
 };
 
 const validateDirectory = async answers => {
@@ -159,6 +164,7 @@ const generateComponentStylesheet = async ({
   const fileName = `${componentName}.${styleType}`;
   const stylesheetTemplatePath = getTemplateFilepath('styleTemplate');
   const stylesheetTemplateOutput = path.join(directory, fileName);
+
   await copyTemplateFile(stylesheetTemplatePath, stylesheetTemplateOutput);
 };
 

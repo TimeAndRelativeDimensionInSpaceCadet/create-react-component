@@ -1,4 +1,0 @@
-#!/usr/bin/env node
-
-require = require("esm-wallaby")(module /*, options*/);
-require("../src/cli").cli(process.argv);

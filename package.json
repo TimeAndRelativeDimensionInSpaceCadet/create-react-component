@@ -1,11 +1,12 @@
 {
   "name": "@jabbrowocky/create-react-component",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A cli to scaffold react components",
-  "main": "./src/cli.js",
+  "type": "module",
+  "exports": "./index.js",
   "bin": {
-    "@jabbrowocky/create-react-component": "./bin/create-react-component",
-    "create-react-component": "./bin/create-react-component"
+    "@jabbrowocky/create-react-component": "./bin/create-react-component.mjs",
+    "create-react-component": "./bin/create-react-component.mjs"
   },
   "publishConfig": {
     "access": "public"
@@ -29,5 +30,8 @@
     "bin/",
     "src/",
     "templates/"
-  ]
+  ],
+  "engines": {
+    "node": ">=16"
+  }
 }
