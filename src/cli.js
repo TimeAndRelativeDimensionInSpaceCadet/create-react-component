@@ -103,8 +103,8 @@ const generateComponent = async ({
 }) => {
   const fileToCopy =
     componentType === "functional"
-      ? "functionComponentTemplate.jsx"
-      : "classComponentTemplate.jsx";
+      ? "functionComponentTemplate"
+      : "classComponentTemplate";
   const template = path.join(__dirname, "../templates", fileToCopy);
   const writeTo = path.join(directory, `${componentName}.jsx`);
   await fs.promises.copyFile(template, writeTo);
