@@ -6,6 +6,6 @@ export class ComponentName extends Component {
   }
 
   render() {
-    return <div className="welcome">Hello World!</div>;
+    return <div className="container">Hello World!</div>;
   }
 }

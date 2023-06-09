@@ -95,14 +95,19 @@ const isValidOption = (inputValue, optionsArr) => {
   return optionsArr?.includes?.(inputValue?.toLowerCase());
 };
 
-const generateComponent = async ({syleType}) => {
+const generateComponent = async ({
+  syleType,
+  componentType,
+  componentName,
+  directory,
+}) => {
   const fileToCopy =
-    options.componentType === "functional"
+    componentType === "functional"
       ? "functionComponentTemplate.jsx"
       : "classComponentTemplate.jsx";
   const template = path.join(__dirname, "../templates", fileToCopy);
-  const writeTo = options
-  fs.copyFile(template, writeTo, ({ code }) => process.exit(code));
+  const writeTo = path.join(directory, `${componentName}.jsx`);
+  await fs.promises.copyFile(template, writeTo);
 };
 
 const validateDirectory = async (answers) => {
