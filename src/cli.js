@@ -29,13 +29,18 @@ const parseArgumentsIntoOptions = rawArgs => {
   };
 };
 
+const isValidOption = (inputValue, optionsArr) => {
+  return optionsArr?.includes?.(inputValue?.toLowerCase());
+};
+
 const promptForMissingOptions = async options => {
+  const { componentName, componentType, styleType, directory } = options;
   const validComponentTypes = ['functional', 'class'];
   const validStyleTypes = ['css', 'scss'];
   const defaultComponentDir = './src/components';
   const potentialQuestions = [];
 
-  if (!options.componentName) {
+  if (!componentName) {
     potentialQuestions.push({
       type: 'input',
       name: 'componentName',
@@ -51,10 +56,7 @@ const promptForMissingOptions = async options => {
     });
   }
 
-  if (
-    !options.componentType ||
-    !isValidOption(options.componentType, validComponentTypes)
-  ) {
+  if (!componentType || !isValidOption(componentType, validComponentTypes)) {
     potentialQuestions.push({
       type: 'list',
       name: 'componentType',
@@ -63,10 +65,7 @@ const promptForMissingOptions = async options => {
     });
   }
 
-  if (
-    !options.styleType ||
-    !isValidOption(options.styleType, validStyleTypes)
-  ) {
+  if (!styleType || !isValidOption(styleType, validStyleTypes)) {
     potentialQuestions.push({
       type: 'list',
       name: 'styleType',
@@ -75,7 +74,7 @@ const promptForMissingOptions = async options => {
     });
   }
 
-  if (!options.directory) {
+  if (!directory) {
     potentialQuestions.push({
       type: 'input',
       name: 'directory',
@@ -91,39 +90,23 @@ const promptForMissingOptions = async options => {
   }));
 };
 
-const isValidOption = (inputValue, optionsArr) => {
-  return optionsArr?.includes?.(inputValue?.toLowerCase());
-};
-
-const generateComponent = async ({
-  componentType,
-  componentName,
-  styleType,
-  directory,
-}) => {
-  const reactComponentFileName = mapComponentTypeToName(componentType);
-
-  const componentTemplate = path.join(
-    __dirname,
-    '../templates',
-    reactComponentFileName
-  );
-  const writeTo = path.join(directory, `${componentName}.jsx`);
-  await fs.promises.copyFile(componentTemplate, writeTo);
-};
-
-const mapComponentTypeToName = componentType => {
+const mapComponentTypeToTemplateName = componentType => {
   return componentType === 'functional'
     ? 'functionComponentTemplate'
     : 'classComponentTemplate';
 };
 
-const generateComponentStyleSheet = async (componentName, styleType) => {
+const generateComponentStyleSheet = async ({
+  componentName,
+  styleType,
+  directory,
+}) => {
   const fileName = `${componentName}.${styleType}`;
-  
 };
 
-const copyTemplateFile = () => { }
+const copyTemplateFile = async (inputFile, outputFile) => {
+  return await fs.promises.copyFile(inputFile, outputFile);
+};
 
 const validateDirectory = async answers => {
   const dirExists = await fs.promises
@@ -158,7 +141,22 @@ const promptCreateDirectory = async ({ directoryExists, ...rest }) => {
         }
       });
   }
-  return { ...rest };
+  return rest;
+};
+
+const generateComponent = async answers => {
+  const { componentType, componentName, directory } = answers;
+  const reactComponentFileName = mapComponentTypeToTemplateName(componentType);
+  const componentTemplate = path.join(
+    __dirname,
+    '../templates',
+    reactComponentFileName
+  );
+  const componentTemplateOutput = path.join(directory, `${componentName}.jsx`);
+
+  await copyTemplateFile(componentTemplate, componentTemplateOutput);
+
+  return answers;
 };
 
 export const cli = async args => {
@@ -168,7 +166,7 @@ export const cli = async args => {
     .then(promptCreateDirectory)
     .then(generateComponent)
     .catch(error => {
-      console.log(error.message);
+      console.error(error.message);
       process.exit(error.code);
     });
 };
