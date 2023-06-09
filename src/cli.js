@@ -96,16 +96,12 @@ const mapComponentTypeToTemplateName = componentType => {
     : 'classComponentTemplate';
 };
 
-const generateComponentStyleSheet = async ({
-  componentName,
-  styleType,
-  directory,
-}) => {
-  const fileName = `${componentName}.${styleType}`;
-};
-
 const copyTemplateFile = async (inputFile, outputFile) => {
   return await fs.promises.copyFile(inputFile, outputFile);
+};
+
+const getTemplateFilepath = name => {
+  return path.join(__dirname, '../templates', name);
 };
 
 const validateDirectory = async answers => {
@@ -147,16 +143,23 @@ const promptCreateDirectory = async ({ directoryExists, ...rest }) => {
 const generateComponent = async answers => {
   const { componentType, componentName, directory } = answers;
   const reactComponentFileName = mapComponentTypeToTemplateName(componentType);
-  const componentTemplate = path.join(
-    __dirname,
-    '../templates',
-    reactComponentFileName
-  );
+  const componentTemplate = getTemplateFilepath(reactComponentFileName);
   const componentTemplateOutput = path.join(directory, `${componentName}.jsx`);
 
   await copyTemplateFile(componentTemplate, componentTemplateOutput);
 
   return answers;
+};
+
+const generateComponentStylesheet = async ({
+  componentName,
+  styleType,
+  directory,
+}) => {
+  const fileName = `${componentName}.${styleType}`;
+  const stylesheetTemplatePath = getTemplateFilepath('styleTemplate');
+  const stylesheetTemplateOutput = path.join(directory, fileName);
+  await copyTemplateFile(stylesheetTemplatePath, stylesheetTemplateOutput);
 };
 
 export const cli = async args => {
@@ -165,6 +168,7 @@ export const cli = async args => {
     .then(validateDirectory)
     .then(promptCreateDirectory)
     .then(generateComponent)
+    .then(generateComponentStylesheet)
     .catch(error => {
       console.error(error.message);
       process.exit(error.code);

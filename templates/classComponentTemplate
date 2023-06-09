@@ -1,4 +1,4 @@
-import { React, Component } from "react";
+import { Component } from 'react';
 
 export class ComponentName extends Component {
   constructor(props) {
@@ -6,6 +6,6 @@ export class ComponentName extends Component {
   }
 
   render() {
-    return <div className="container">Hello World!</div>;
+    return <div>Hello World!</div>;
   }
 }
