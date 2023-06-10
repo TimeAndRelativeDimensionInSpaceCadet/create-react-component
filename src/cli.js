@@ -2,7 +2,7 @@ import arg from 'arg';
 import inquirer from 'inquirer';
 import path from 'node:path';
 import fs from 'node:fs';
-import * as url from 'url';
+import { fileURLToPath } from 'url';
 
 const parseArgumentsIntoOptions = rawArgs => {
   const componentTypeFlag = '--component';
@@ -103,7 +103,7 @@ const copyTemplateFile = async (inputFile, outputFile) => {
 
 const getTemplateFilepath = name => {
   return path.join(
-    url.fileURLToPath(new URL('.', import.meta.url)),
+    fileURLToPath(new URL('.', import.meta.url)),
     '../templates',
     name
   );
