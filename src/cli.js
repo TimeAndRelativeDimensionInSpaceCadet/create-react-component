@@ -2,6 +2,7 @@ import arg from 'arg';
 import inquirer from 'inquirer';
 import path from 'node:path';
 import fs from 'node:fs';
+import { open } from 'node:fs/promises';
 import { fileURLToPath } from 'url';
 
 const parseArgumentsIntoOptions = rawArgs => {
@@ -9,13 +10,17 @@ const parseArgumentsIntoOptions = rawArgs => {
   const styleFileTypeFlag = '--style';
   const shorthandTypeFlag = '-c';
   const styleShorthandFlag = '-s';
+  const helpFlag = '--help';
+  const helpShorthand = '-h';
 
   const args = arg(
     {
       [componentTypeFlag]: String,
       [styleFileTypeFlag]: String,
+      [helpFlag]: Boolean,
       [styleShorthandFlag]: styleFileTypeFlag,
       [shorthandTypeFlag]: componentTypeFlag,
+      [helpShorthand]: helpFlag,
     },
     {
       argv: rawArgs.slice(2),
@@ -23,6 +28,7 @@ const parseArgumentsIntoOptions = rawArgs => {
   );
 
   return {
+    showHelp: args[helpFlag] || false,
     componentType: args[componentTypeFlag]?.toLowerCase(),
     styleType: args[styleFileTypeFlag]?.toLowerCase(),
     componentName: args._[0],
@@ -163,6 +169,14 @@ const generateComponent = async answers => {
   return answers;
 };
 
+const displayHelpFile = async () => {
+  const helpFile = await open('./src/help.txt');
+
+  for await (const line of helpFile.readLines()) {
+    console.log(line);
+  }
+};
+
 const generateComponentStylesheet = async ({
   componentName,
   styleType,
@@ -177,6 +191,11 @@ const generateComponentStylesheet = async ({
 
 export const cli = async args => {
   const options = parseArgumentsIntoOptions(args);
+
+  if (options.showHelp) {
+    return await displayHelpFile();
+  }
+
   await promptForMissingOptions(options)
     .then(validateDirectory)
     .then(promptCreateDirectory)

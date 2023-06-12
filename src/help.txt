@@ -1,0 +1,19 @@
+create-react-component help:
+
+Simply calling 'create-react-component' command will prompt for options/arguments
+
+Standalone Arguments
+----------------------------------------------------------------------------------------------------------------------------------------
+arg[0]:                    Component Name   Provides name for component generation 
+                                            -- eg: create-react-component [componentName]
+arg[1]:               Component Directory   This is the directory the component and stylesheets will be generated in. 
+                                            -- eg: create-react-component [componentName] [componentDirectory]
+                                            -- this value is relative to the directory this command is called from
+Options
+----------------------------------------------------------------------------------------------------------------------------------------
+--component (alias: -c):   Component Type    Specifies preferred react component type 
+                                             -- eg: create-react-component --component functional
+                                             -- Must be value of "class" | "functional"
+--style     (alias: -s):  Stylesheet Type    Specifies the preffered stylesheet format 
+                                             -- eg: create-react-component --style scss
+                                             -- Must be value of "css" | "scss"
