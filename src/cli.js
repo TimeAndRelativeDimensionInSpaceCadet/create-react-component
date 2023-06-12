@@ -93,8 +93,8 @@ const promptForMissingOptions = async options => {
 
 const mapComponentTypeToTemplateName = componentType => {
   return componentType === 'functional'
-    ? 'functionComponentTemplate'
-    : 'classComponentTemplate';
+    ? 'functionComponentTemplate.js'
+    : 'classComponentTemplate.js';
 };
 
 const copyTemplateFile = async (inputFile, outputFile) => {
@@ -149,9 +149,16 @@ const generateComponent = async answers => {
   const { componentType, componentName, directory } = answers;
   const reactComponentFileName = mapComponentTypeToTemplateName(componentType);
   const componentTemplate = getTemplateFilepath(reactComponentFileName);
-  const componentTemplateOutput = path.join(directory, `${componentName}.jsx`);
+  const componentTemplateOutputFullPath = path.join(
+    directory,
+    `${componentName}.jsx`
+  );
+  const updatedTemplate = await fs.promises
+    .readFile(componentTemplate)
+    .then(buffer => buffer.toString())
+    .then(dataStr => dataStr.replace(/componentname/i, componentName));
 
-  await copyTemplateFile(componentTemplate, componentTemplateOutput);
+  await fs.promises.writeFile(componentTemplateOutputFullPath, updatedTemplate);
 
   return answers;
 };
