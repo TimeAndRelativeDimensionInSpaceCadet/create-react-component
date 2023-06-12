@@ -1,6 +1,6 @@
 {
   "name": "@jabbrowocky/create-react-component",
-  "version": "0.0.32",
+  "version": "0.0.4",
   "description": "A cli to scaffold react components",
   "type": "module",
   "exports": "./index.js",
