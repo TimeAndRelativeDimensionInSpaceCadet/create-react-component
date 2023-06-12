@@ -14,12 +14,14 @@ You can also supply any of the arguments by way of providing them with the comma
 
 ##### Args:
 
-Arg | Description | Definition | Constraint
-Arg 0 | Component Name | Desired name of component |
-Arg 1 | Component Directory | The desired Component directory/subdirectory | Relative to execution directory, or absolute path
+| Arg   | Description         | Definition                                   | Constraint                                        |
+| ----- | ------------------- | -------------------------------------------- | ------------------------------------------------- |
+| Arg 0 | Component Name      | Desired name of component                    |                                                   |
+| Arg 1 | Component Directory | The desired Component directory/subdirectory | Relative to execution directory, or absolute path |
 
 ##### Flags:
 
-Flag Value | Description | Constraints
-`--component` or `-c` | Component type | Must provide a value of either 'functional' or 'class'
-`--style` or `-s` | Stylesheet type | Must provide a value of either 'css' or 'scss'
+| Flag Value            | Description     | Constraints                                            |
+| --------------------- | --------------- | ------------------------------------------------------ |
+| `--component` or `-c` | Component type  | Must provide a value of either 'functional' or 'class' |
+| `--style` or `-s`     | Stylesheet type | Must provide a value of either 'css' or 'scss'         |
